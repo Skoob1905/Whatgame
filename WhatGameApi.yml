@@ -1,0 +1,165 @@
+openapi: "3.0.2"
+info:
+  title: WhatGameApi
+  version: "1.0"
+  contact:
+    name: Joseph Meyrick
+    email: joseph.s.meyrick@gmail.com
+
+servers:
+  - url: "http://localhost:3000/api"
+
+components:
+  securitySchemes:
+    apiToken:
+      in: header
+      type: apiKey
+      name: Authorization
+  responses:
+    UnauthorizedError:
+      description: Authentication information is missing or invalid
+      headers:
+        Authenticate:
+          schema:
+            type: string
+  schemas:
+    Games:
+      type: array
+      items:
+        type: object
+        properties:
+          uuid:
+            type: string
+            example: a-b-c-d-e
+          title:
+            type: string
+            example: Call Of Duty
+          category:
+            type: string
+            example: fps
+          ageRating:
+            type: integer
+            example: 18
+
+tags:
+  - name: Auth
+    description: Sign in and retrieve token
+  - name: Games
+    description: Retrieve games based on age
+  - name: Recommendations
+    description: save / retrieve recommendations
+
+paths:
+  /recommendations:
+    post:
+      description: save your recommendations
+      tags:
+        - Recommendations
+      security:
+        - apiToken: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  uuid:
+                    type: string
+                    example: a-b-c-d-e
+      responses:
+        "201":
+          description: recommendation saved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dateCreated:
+                    type: string
+                    example: 18/05/2023
+                  count:
+                    type: integer
+                    example: 1
+                  recommendations:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        uuid:
+                          type: string
+                          example: a-b-c-d-e
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+    get:
+      description: retrieve recommendations
+      tags:
+        - Recommendations
+      security:
+        - apiToken: []
+      responses:
+        200:
+          description: Recommendation retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Games"
+        403:
+          description: You are unauthorized to make this request
+  /games:
+    get:
+      description: Retrieve all games based on ageRating and category
+      parameters:
+        - name: age
+          in: query
+          description: age of the user
+          schema:
+            type: string
+            example: 20
+        - name: category
+          in: query
+          description: Preferred category
+          schema:
+            type: string
+            example: Platform
+      tags:
+        - Games
+      responses:
+        "200":
+          description: Success - Retrieved all games
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Games"
+  /signin:
+    post:
+      description: "Get access token"
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Joseph
+                email:
+                  type: string
+                  example: joseph.meyrick@gmail.com
+                dob:
+                  type: string
+                  example: 31/03/1999
+      responses:
+        "200":
+          description: "Success - Token Retrieved"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "TestToken123"

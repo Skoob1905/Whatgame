@@ -1,0 +1,211 @@
+openapi: '3.0.2'
+info:
+  title: MyMechanic
+  version: '1.0'
+  contact:
+    name: Joseph
+  description: |-
+    ## Intro
+    This is an API Spec written in openApi v3 and allows the mechanic shop to operate:
+    using this API you will be able token:
+      
+      - manage clients
+      - order new parts 
+      - something
+      - something else
+    
+    any problems with this api please contact me.
+
+    ## Authorization
+    You must create an auth token for using this api. Please create a user by doing the following stuff blah blah
+servers:
+  - url: https://farmstall.designapis.com/v1/
+components:
+  securitySchemes:
+    apiToken:              
+      type: apiKey            
+      in: header              
+      name: Authorization
+tags:
+  - name: Reviews 
+    description: Manage and retrieve reviews
+  - name: Authorization
+    description: get API token
+  - name: Users
+    description: User info
+    
+paths:
+  /reviews:
+    get:
+      
+      description: Get a bunch of reviews.
+      tags:
+        - Reviews
+      security:
+        - apiToken : []
+      parameters:
+      - name: maxRating
+        description: Filter the reviews by the maximum rating
+        in: query
+        schema:
+          type: number
+      responses:
+        200:
+          description: A bunch of reviews
+    post:
+      description: Create a new Review
+      tags:
+        - Reviews
+      security:
+        - apiToken : []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: An awesome time for the whole family.
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                  example: 5
+      responses:
+        '201':
+          description: Successfully created a new Review
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: An awesome time for the whole family.
+                  rating:
+                    type: integer
+                    minimum: 1
+                    maximum: 5
+                    example: 5
+                  userId:
+                    type: string
+                    nullable: true
+                    pattern: '[a-zA-Z-.0-9]{36}'
+                    example: f7f680a8-d111-421f-b6b3-493ebf905078
+                  uuid:
+                    type: string
+                    pattern: '[a-zA-Z-.0-9]{36}'
+                    example: f7f680a8-d111-421f-b6b3-493ebf905078
+  /reviews/{reviewId}:
+    get:
+      description: Get a single reviewt
+      tags:
+        - Reviews
+      security:
+        - apiToken : []
+      parameters:
+      - name: reviewId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 36
+          maxLength: 36
+          pattern: '[a-zA-Z0-9-]+'
+      responses:
+        '200':
+          description: A single review
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: An awesome time for the whole family.
+                  rating:
+                    type: integer
+                    minimum: 1
+                    maximum: 5
+                    example: 5
+                  userId:
+                    minLength: 36
+                    maxLength: 36
+                    pattern: '^[a-zA-Z0-9-]+$'
+                    nullable: true
+                    example: f7f680a8-d111-421f-b6b3-493ebf905078
+                  uuid:
+                    minLength: 36
+                    maxLength: 36
+                    pattern: '^[a-zA-Z0-9-]+$'
+                    example: f7f680a8-d111-421f-b6b3-493ebf905078
+  /users:
+    post: 
+      description: Create a new user
+      tags:
+        - Users
+      security:
+        - apiToken : []
+      requestBody:
+        description: User details
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: ponelat
+                password:
+                  type: string
+                  format: password
+                fullName:
+                  type: string
+                  example: Josh Ponelat
+      responses:
+        201:
+          description: 'User created'
+          content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    username:
+                      type: string
+                      example: ponelat
+                    uuid:
+                      type: string
+                      example: f7f680a8-d111-421f-b6b3-493ebf905078    
+  /tokens:
+    post:
+      description: Sign in and get a new token
+      tags:
+        - Authorization
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: joseph
+                password:
+                  type: string
+                  format: password
+
+      responses:
+        '201':
+          description: Create a new token for gaining access to resources.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string      
+
+        
+      
+            
