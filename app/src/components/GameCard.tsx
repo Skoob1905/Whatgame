@@ -1,11 +1,13 @@
-import React from 'react'
+import React, { useState, useContext, useReducer } from 'react'
 import { Box, Button, Text } from '@chakra-ui/react'
 import EditIcon from '@mui/icons-material/Edit'
-import { redirect } from 'next/dist/server/api-utils'
-import Link from 'next/link'
+import GameForm from './GameForm'
+// import { GameContextInfo } from 'providers/GameInfoContext'
 
 const GameCard = (props) => {
-	const { title, ageRating, category } = props
+	const { gameId, title, ageRating, category } = props
+	const [showModal, setShowModal] = useState(false)
+
 	return (
 		<Box
 			m="0.5rem"
@@ -24,9 +26,16 @@ const GameCard = (props) => {
 			<Text color="black">
 				Category: <b>{category}</b>
 			</Text>
-			<Link href="/game/1">
+			<Button onClick={() => setShowModal(true)}>
 				<EditIcon />
-			</Link>
+			</Button>
+			{showModal && (
+				<GameForm
+					gameId={gameId}
+					isOpen={showModal}
+					onClose={() => setShowModal(false)}
+				/>
+			)}
 		</Box>
 	)
 }

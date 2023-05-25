@@ -2,6 +2,18 @@ import React from 'react'
 import { Box, Flex } from '@chakra-ui/react'
 import GameCard from './GameCard'
 
+type Game = {
+	gameId: string
+	title: string
+	category: string
+	age: number
+}
+
+type CardBoxProps = {
+	games: Game[]
+	children: React.ReactNode
+}
+
 const CardBox = (props: CardBoxProps) => {
 	const { games, children } = props
 	return (
@@ -16,9 +28,9 @@ const CardBox = (props: CardBoxProps) => {
 				border="1px solid white"
 				h="30rem"
 			>
-				{games?.map(({ ...gameProps }, idx: number) => (
+				{games?.map(({ gameId, ...gameProps }) => (
 					<GameCard
-						key={idx}
+						key={gameId}
 						{...gameProps}
 					/>
 				))}
