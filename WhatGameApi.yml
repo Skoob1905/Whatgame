@@ -110,19 +110,18 @@ paths:
   /games:
     get:
       description: Retrieve all games based on ageRating and category
-      parameters:
-        - name: age
-          in: query
-          description: age of the user
-          schema:
-            type: string
-            example: 20
-        - name: category
-          in: query
-          description: Preferred category
-          schema:
-            type: string
-            example: Platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ageRating:
+                  type: integer
+                  example: 16
+                category:
+                  type: string
+                  example: fps
       tags:
         - Games
       responses:
@@ -132,6 +131,25 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Games"
+  /games/{gameId}:
+    get:
+      description: get specific game info
+      parameters:
+        - name: gameId
+          in: query
+          example: 1
+          schema:
+            type: string
+      tags:
+        - Games
+      responses:
+        "200":
+          description: retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Games"
+
   /signin:
     post:
       description: "Get access token"
