@@ -12,6 +12,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@babel/core": "^7.22.1",
+    "@babel/preset-env": "^7.22.4",
+    "@babel/preset-react": "^7.22.3",
     "@chakra-ui/react": "^2.6.1",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
@@ -33,6 +36,7 @@
   "devDependencies": {
     "@testing-library/react": "^14.0.0",
     "@types/axios": "^0.14.0",
+    "@types/jest": "^29.5.1",
     "@types/next-auth": "^3.15.0",
     "@types/node": "20.2.1",
     "@types/react": "18.2.6",
