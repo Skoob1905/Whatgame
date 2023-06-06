@@ -1,69 +1,62 @@
 'use client'
-
-import React, { FormEvent, useState } from 'react'
-import { Input, Button, Text, SimpleGrid } from '@chakra-ui/react'
+import React, { useContext, useState } from 'react'
+import {
+	Input,
+	Button,
+	Text,
+	SimpleGrid,
+	Toast,
+	useToast,
+} from '@chakra-ui/react'
 import CardBox from 'components/CardBox'
 import axios from 'axios'
+import { AppContext } from 'providers/AppContext'
 
-const Games = () => {
-	const [age, setAge] = useState('')
-	const [category, setCategory] = useState('')
-	const [games, setGames] = useState([])
-	const [showErrorMessage, setShowErrorMessage] = useState<boolean>(false)
-	const handleAgeChange = (e: FormEvent<HTMLInputElement>) => {
-		setAge(e.currentTarget.value)
-	}
-	const handleCategoryChange = (e: FormEvent<HTMLInputElement>) => {
-		setCategory(e.currentTarget.value)
-	}
+const Games = ({ games, setGames, setRecommendations }) => {
+	const toast = useToast()
 
 	const getParams = () => {
-		return category == '' ? { age } : { age, category }
+		const age = document.getElementById('age').value
+		const category = document.getElementById('category').value
+		const ageParam = age && { age }
+		const categoryParam = category && { category }
+
+		return { ...ageParam, ...categoryParam }
 	}
 
-	const handleSearch = async () => {
-		setShowErrorMessage(false)
-		if (age == '') {
-			setShowErrorMessage(true)
-			return
-		}
+	const handleSearch = () => {
 		axios
 			.get('http://localhost:3000/api/games', {
 				params: getParams(),
 			})
-			.then((res) => setGames(res.data))
+			.then((res) => {
+				setGames(res.data.data)
+			})
 	}
 
-	const handleSave = () => {
-		const data = games.map(({ gameId }) => {
-			return {
-				gamerId: 'Joseph',
-				gameId: gameId.toString(),
-				dateRecommended: new Date(),
-			}
-		})
-
-		axios.post('http://localhost:3000/api/recommendations', {
-			data,
+	const handleSave = async () => {
+		const res = await axios.post('http://localhost:3000/api/recommendations')
+		setRecommendations(res.data.data)
+		toast({
+			status: 'info',
+			position: 'top',
+			isClosable: true,
+			duration: 3000,
+			containerStyle: {
+				marginTop: '2rem',
+			},
+			title: 'Favourites Saved',
+			description:
+				'You can now retrieve your recommendations at any time using retrieve recommendations',
 		})
 	}
 
 	const handleClear = () => {
 		setGames([])
-		setCategory('')
-		setAge('')
 	}
 
 	return (
-		<CardBox games={games}>
-			{showErrorMessage && (
-				<Text
-					color="red"
-					textAlign="center"
-				>
-					Please give an age
-				</Text>
-			)}
+		<CardBox content={games}>
 			<SimpleGrid
 				columns={2}
 				spacing={5}
@@ -71,17 +64,16 @@ const Games = () => {
 			>
 				<Input
 					placeholder="Age"
-					onChange={handleAgeChange}
-					value={age}
+					id="age"
 				/>
 				<Input
 					placeholder="Category"
-					onChange={handleCategoryChange}
-					value={category}
+					id="category"
 				/>
 				<Button onClick={handleSearch}>Search</Button>
 				<Button onClick={handleSave}>Save</Button>
 				<Button onClick={handleClear}>Clear</Button>
+				{/* <Button onClick={() => setShowModal(true)}>Add Game</Button> */}
 			</SimpleGrid>
 		</CardBox>
 	)

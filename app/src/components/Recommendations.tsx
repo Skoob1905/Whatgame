@@ -1,20 +1,36 @@
-'use client'
-import React, { useState } from 'react'
+import React from 'react'
 import { Button } from '@chakra-ui/react'
 import CardBox from 'components/CardBox'
 import axios from 'axios'
+import { TRecommendation } from '../../types'
 
-const Recommendations = () => {
-	const [games, setGames] = useState([])
+type RecommendationsProps = {
+	recommendations: Array<TRecommendation>
+	setRecommendations: ([]) => void
+}
 
-	const handleClick = () => {
-		axios
-			.get('http://localhost:3000/api/recommendations')
-			.then((res) => console.log(res))
+const Recommendations = ({
+	recommendations,
+	setRecommendations,
+}: RecommendationsProps) => {
+	const handleClick = async () => {
+		const { data: rawResponse } = await axios.get(
+			'http://localhost:3000/api/recommendations/'
+		)
+		const processedResponse = await Promise.all(
+			rawResponse.map(async ({ gameId }: TRecommendation) => {
+				const {
+					data: { data },
+				} = await axios.get(`http://localhost:3000/api/games/${gameId}`)
+				return data
+			})
+		)
+
+		setRecommendations(processedResponse)
 	}
 
 	return (
-		<CardBox games={games}>
+		<CardBox content={recommendations}>
 			<Button
 				mx="auto"
 				mb="2rem"
@@ -25,7 +41,7 @@ const Recommendations = () => {
 			<Button
 				mx="auto"
 				mb="2rem"
-				onClick={() => setGames([])}
+				onClick={() => setRecommendations([])}
 			>
 				Clear
 			</Button>

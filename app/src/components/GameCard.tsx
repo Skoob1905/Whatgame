@@ -1,12 +1,29 @@
-import React, { useState, useContext, useReducer } from 'react'
-import { Box, Button, Text } from '@chakra-ui/react'
-import EditIcon from '@mui/icons-material/Edit'
-import GameForm from './GameForm'
-// import { GameContextInfo } from 'providers/GameInfoContext'
+import React, { useState, useEffect } from 'react'
+import { Box, Text } from '@chakra-ui/react'
+import { IconButton } from '@chakra-ui/react'
+import StarBorderIcon from '@mui/icons-material/StarBorder'
+import StarIcon from '@mui/icons-material/Star'
+import axios from 'axios'
 
-const GameCard = (props) => {
-	const { gameId, title, ageRating, category } = props
-	const [showModal, setShowModal] = useState(false)
+const GameCard = (props: any) => {
+	const [gameInfo, setGameInfo] = useState({
+		gameId: null,
+		ageRating: null,
+		genre: null,
+		name: null,
+		starred: null,
+	})
+
+	useEffect(() => {
+		setGameInfo(props)
+	}, [])
+
+	const { ageRating, genre, name, starred, gameId } = gameInfo
+
+	async function handleSetStarred() {
+		setGameInfo({ ...gameInfo, starred: !starred })
+		await axios.put(`http://localhost:3000/api/games/starred/${gameId}`)
+	}
 
 	return (
 		<Box
@@ -18,24 +35,27 @@ const GameCard = (props) => {
 			position="relative"
 		>
 			<Text color="black">
-				Name: <b>{title}</b>
+				Name: <b>{name}</b>
 			</Text>
 			<Text color="black">
 				Age: <b>{ageRating}</b>
 			</Text>
 			<Text color="black">
-				Category: <b>{category}</b>
+				Category: <b>{genre}</b>
 			</Text>
-			<Button onClick={() => setShowModal(true)}>
-				<EditIcon />
-			</Button>
-			{showModal && (
-				<GameForm
-					gameId={gameId}
-					isOpen={showModal}
-					onClose={() => setShowModal(false)}
-				/>
-			)}
+			<IconButton
+				onClick={handleSetStarred}
+				aria-label="setFavorite"
+				position="absolute"
+				right="1rem"
+				top="1rem"
+			>
+				{starred ? (
+					<StarIcon style={{ color: 'yellow' }} />
+				) : (
+					<StarBorderIcon style={{ color: 'yellow' }} />
+				)}
+			</IconButton>
 		</Box>
 	)
 }

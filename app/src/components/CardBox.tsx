@@ -1,21 +1,18 @@
-import React from 'react'
-import { Box, Flex } from '@chakra-ui/react'
+import { Box, Flex, Text } from '@chakra-ui/react'
 import GameCard from './GameCard'
+import { ReactNode } from 'react'
 
-type Game = {
+type TGame = {
 	gameId: string
-	title: string
-	category: string
-	age: number
 }
 
 type CardBoxProps = {
-	games: Game[]
-	children: React.ReactNode
+	children: ReactNode
+	content: Array<TGame>
 }
 
 const CardBox = (props: CardBoxProps) => {
-	const { games, children } = props
+	const { content, children } = props
 	return (
 		<Flex
 			flexDirection="column"
@@ -27,13 +24,25 @@ const CardBox = (props: CardBoxProps) => {
 			<Box
 				border="1px solid white"
 				h="30rem"
+				overflowY="scroll"
 			>
-				{games?.map(({ gameId, ...gameProps }) => (
-					<GameCard
-						key={gameId}
-						{...gameProps}
-					/>
-				))}
+				{content?.length === 0 ? (
+					<Text
+						color="lightgray"
+						opacity={0.7}
+						mt="2rem"
+						textAlign="center"
+					>
+						No Records showing
+					</Text>
+				) : (
+					content?.map((game: TGame) => (
+						<GameCard
+							key={game.gameId}
+							{...game}
+						/>
+					))
+				)}
 			</Box>
 		</Flex>
 	)

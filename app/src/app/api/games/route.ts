@@ -15,5 +15,7 @@ export async function GET(request: NextRequest) {
 	const data = await prisma.game.findMany({
 		where: getPrismaConditions(age, category),
 	})
-	return NextResponse.json({ data })
+	return NextResponse.json({
+		data: data.sort((a, b) => b.starred - a.starred),
+	})
 }
